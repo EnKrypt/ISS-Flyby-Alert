@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
-import { SecureStore } from 'expo';
-import parse from 'date-fns/parse';
+import { SecureStore, Notifications, BackgroundFetch, TaskManager } from 'expo';
 import { handleError } from '../handlers';
 import AlertSettings from './AlertSettings';
 import Colors from '../constants/Colors';
+import { getSightings } from '../task';
 
 export default class Root extends React.Component {
     constructor() {
@@ -78,58 +78,6 @@ export default class Root extends React.Component {
         }
     }
 
-    getSightings = async location => {
-        const query = await fetch(
-            `https://spotthestation.nasa.gov/sightings/xml_files/${
-                location.country
-            }_${location.region}_${location.city}.xml`
-        );
-        if (query.ok) {
-            const response = await query.text();
-            const mappedResponse = response
-                .match(/\<item\>([\S\s]*?)\<\/item\>/gm)
-                .map(match =>
-                    match
-                        .match(
-                            /\<description\>([\S\s]*?)\<\/description\>/gm
-                        )[0]
-                        .substring(13)
-                        .slice(0, -14)
-                        .trim()
-                );
-            const sightings = mappedResponse.map(res => {
-                const exploded = res.split(' ');
-                const date = [
-                    exploded[1],
-                    exploded[2],
-                    exploded[3],
-                    exploded[4]
-                ]
-                    .join(' ')
-                    .replace(/\,/gm, '');
-                const time = [exploded[6], exploded[7]].join(' ');
-                return {
-                    when: parse(`${date}, ${time}`),
-                    duration: +exploded[9],
-                    maxElevation: exploded[13].replace('&#176;', '°'),
-                    approach: [
-                        exploded[15].replace('&#176;', '°'),
-                        exploded[16],
-                        exploded[17]
-                    ].join(' '),
-                    departure: [
-                        exploded[19].replace('&#176;', '°'),
-                        exploded[20],
-                        exploded[21]
-                    ].join(' ')
-                };
-            });
-            return sightings;
-        } else {
-            return [];
-        }
-    };
-
     setNotification = value => {
         this.setState(
             {
@@ -141,9 +89,14 @@ export default class Root extends React.Component {
                     JSON.stringify(value)
                 );
                 if (value) {
-                    await this.addNotifications(this.state.minutesAgo);
+                    await this.addNotifications(
+                        this.state.sightings,
+                        this.state.minutesAgo
+                    );
+                    await BackgroundFetch.registerTaskAsync('sync');
                 } else {
                     await this.removeNotifications();
+                    await BackgroundFetch.unregisterTaskAsync('sync');
                 }
             }
         );
@@ -160,14 +113,19 @@ export default class Root extends React.Component {
                     JSON.stringify(minutes)
                 );
                 await this.removeNotifications();
-                await this.addNotifications(minutes);
+                await this.addNotifications(this.state.sightings, minutes);
             }
         );
     };
 
-    async removeNotifications() {}
+    removeNotifications = async () => {
+        await Notifications.cancelAllScheduledNotificationsAsync();
+        await SecureStore.deleteItemAsync('scheduled');
+    };
 
-    async addNotifications(minutes) {}
+    getSightings = getSightings;
+
+    addNotifications = addNotifications;
 
     render() {
         return this.state.loaded ? (

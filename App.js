@@ -1,6 +1,9 @@
 import React from 'react';
-import { AppLoading, Font } from 'expo';
+import { AppLoading, Font, TaskManager } from 'expo';
 import Root from './components/Root';
+import { task } from './task';
+
+TaskManager.defineTask('sync', task);
 
 export default class App extends React.Component {
     state = {
