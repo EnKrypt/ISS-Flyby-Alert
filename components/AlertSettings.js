@@ -5,8 +5,11 @@ import {
     View,
     Switch,
     Picker,
-    ScrollView
+    ScrollView,
+    Button,
+    TouchableOpacity
 } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
 import format from 'date-fns/format';
 import diwtn from 'date-fns/distance_in_words_to_now';
@@ -16,50 +19,103 @@ import subMinutes from 'date-fns/sub_minutes';
 
 export default class AlertSettings extends React.Component {
     render() {
-        const sightings = this.props.sightings.map(sighting => {
-            let style = styles.sighting;
-            let relative = '';
-            if (isToday(sighting.when)) {
-                style = styles.todaySighting;
-            }
-            if (isPast(sighting.when)) {
-                style = styles.pastSighting;
-                relative = `${diwtn(sighting.when)} ago`;
-                relative = relative.charAt(0).toUpperCase() + relative.slice(1);
-            } else {
-                relative = `In ${diwtn(sighting.when)}`;
-            }
-            return (
-                <View
-                    style={styles.sightingContainer}
-                    key={JSON.stringify(sighting)}
-                >
-                    <View>
-                        <Text style={style}>
-                            {`${format(
-                                sighting.when,
-                                'Do MMM, YYYY [at] H:mm A'
-                            )}`}
-                        </Text>
-                        {this.props.notification && !isPast(sighting.when) && (
-                            <Text style={styles.notificationText}>
-                                Alert set for{' '}
-                                {`${format(
-                                    subMinutes(
+        const sightings = this.props.sightings.length ? (
+            this.props.sightings.map((sighting, index) => {
+                let style = styles.sighting;
+                let relative = '';
+                if (isToday(sighting.when)) {
+                    style = styles.todaySighting;
+                }
+                if (isPast(sighting.when)) {
+                    style = styles.pastSighting;
+                    relative = `${diwtn(sighting.when)} ago`;
+                    relative =
+                        relative.charAt(0).toUpperCase() + relative.slice(1);
+                } else {
+                    relative = `In ${diwtn(sighting.when)}`;
+                }
+                return (
+                    <TouchableOpacity
+                        style={styles.sightingContainer}
+                        key={JSON.stringify(sighting)}
+                        onPress={() => {
+                            this.props.toggleSightingExpand(index);
+                        }}
+                    >
+                        <View>
+                            <View style={styles.inlineView}>
+                                <Text style={style}>
+                                    {`${format(
                                         sighting.when,
-                                        this.props.minutes
-                                    ),
-                                    'Do MMM [at] H:mm A'
-                                )}`}
-                            </Text>
-                        )}
-                    </View>
-                    <Text style={style}>{relative}</Text>
-                </View>
-            );
-        });
+                                        'Do MMM, YYYY [at] H:mm A'
+                                    )}`}{' '}
+                                </Text>
+                                {sighting.expanded ? (
+                                    <FontAwesome
+                                        name="angle-up"
+                                        size={16}
+                                        color={Colors.text}
+                                    />
+                                ) : (
+                                    <FontAwesome
+                                        name="angle-down"
+                                        size={16}
+                                        color={Colors.text}
+                                    />
+                                )}
+                            </View>
+                            {sighting.expanded && (
+                                <Text style={styles.metaText}>
+                                    Visible for {sighting.duration} minutes
+                                    {'\n'}
+                                    Appears at {sighting.approach}
+                                    {'\n'}
+                                    Reaches max altitude of{' '}
+                                    {sighting.maxElevation}
+                                    {'\n'}
+                                    Disappears at {sighting.departure}
+                                </Text>
+                            )}
+                            {this.props.notification &&
+                                !isPast(sighting.when) && (
+                                    <Text style={styles.notificationText}>
+                                        Alert set for{' '}
+                                        {`${format(
+                                            subMinutes(
+                                                sighting.when,
+                                                this.props.minutes
+                                            ),
+                                            'Do MMM [at] H:mm A'
+                                        )}`}
+                                    </Text>
+                                )}
+                        </View>
+                        <Text style={style}>{relative}</Text>
+                    </TouchableOpacity>
+                );
+            })
+        ) : (
+            <View style={styles.singleRowControl}>
+                <Text style={styles.disclaimer}>
+                    There are no upcoming sightings in your area (in accordance
+                    with data provided by NASA){'\n'}
+                    Check again after two weeks.
+                </Text>
+            </View>
+        );
         return (
             <ScrollView style={styles.container}>
+                <View style={styles.singleRowControl}>
+                    <Text style={styles.text}>
+                        Your location is set to : {'\n'}
+                        {this.props.location.title}
+                    </Text>
+                    <Button
+                        title="Change"
+                        color={Colors.accent}
+                        onPress={this.props.selectLocation}
+                    />
+                </View>
                 <View style={styles.singleRowControl}>
                     <Text style={styles.text}>Alerts: </Text>
                     <Switch
@@ -161,5 +217,16 @@ const styles = StyleSheet.create({
         fontFamily: 'Signika',
         fontSize: 13,
         color: Colors.accent
+    },
+    metaText: {
+        fontFamily: 'Signika',
+        fontSize: 11,
+        color: Colors.text
+    },
+    inlineView: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
     }
 });
