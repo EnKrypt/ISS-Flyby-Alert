@@ -1,5 +1,6 @@
 import React from 'react';
 import { AppLoading, Font, TaskManager } from 'expo';
+import { FontAwesome } from '@expo/vector-icons';
 import Root from './components/Root';
 import { task } from './task';
 
@@ -29,7 +30,8 @@ export default class App extends React.Component {
             // All startup actions go here
             Font.loadAsync({
                 Signika: require('./assets/Signika-Regular.ttf')
-            })
+            }),
+            Font.loadAsync(FontAwesome.font)
         ]);
     }
 }
