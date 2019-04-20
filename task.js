@@ -16,39 +16,52 @@ export const getSightings = async location => {
         // I am winging the manual XML parsing happening here.
         // If you came here for the ugly regex expressions,
         // I promise I won't tell anyone your dirty perversions.
-        const mappedResponse = response
-            .match(/\<item\>([\S\s]*?)\<\/item\>/gm)
-            .map(match =>
+        const existingSightings = response.match(
+            /\<item\>([\S\s]*?)\<\/item\>/gm
+        );
+        if (existingSightings) {
+            const mappedResponse = existingSightings.map(match =>
                 match
                     .match(/\<description\>([\S\s]*?)\<\/description\>/gm)[0]
                     .substring(13)
                     .slice(0, -14)
                     .trim()
             );
-        const sightings = mappedResponse.map(res => {
-            const exploded = res.split(' ');
-            const date = [exploded[1], exploded[2], exploded[3], exploded[4]]
-                .join(' ')
-                .replace(/\,/gm, '');
-            const time = [exploded[6], exploded[7]].join(' ');
-            return {
-                when: parse(`${date}, ${time}`),
-                duration: +exploded[9],
-                maxElevation: exploded[13].replace('&#176;', '°'),
-                approach: [
-                    exploded[15].replace('&#176;', '°'),
-                    exploded[16],
-                    exploded[17]
-                ].join(' '),
-                departure: [
-                    exploded[19].replace('&#176;', '°'),
-                    exploded[20],
-                    exploded[21]
-                ].join(' ')
-            };
-        });
-        await SecureStore.setItemAsync('sightings', JSON.stringify(sightings));
-        return sightings;
+            const sightings = mappedResponse.map(res => {
+                const exploded = res.split(' ');
+                const date = [
+                    exploded[1],
+                    exploded[2],
+                    exploded[3],
+                    exploded[4]
+                ]
+                    .join(' ')
+                    .replace(/\,/gm, '');
+                const time = [exploded[6], exploded[7]].join(' ');
+                return {
+                    when: parse(`${date}, ${time}`),
+                    duration: +exploded[9],
+                    maxElevation: exploded[13].replace('&#176;', '°'),
+                    approach: [
+                        exploded[15].replace('&#176;', '°'),
+                        exploded[16],
+                        exploded[17]
+                    ].join(' '),
+                    departure: [
+                        exploded[19].replace('&#176;', '°'),
+                        exploded[20],
+                        exploded[21]
+                    ].join(' ')
+                };
+            });
+            await SecureStore.setItemAsync(
+                'sightings',
+                JSON.stringify(sightings)
+            );
+            return sightings;
+        } else {
+            return [];
+        }
     } else {
         return [];
     }
@@ -113,4 +126,12 @@ export const task = async () => {
         handleError(err);
         return BackgroundFetch.Result.Failed;
     }
+};
+
+export const purgeStorage = async () => {
+    await SecureStore.deleteItemAsync('location');
+    await SecureStore.deleteItemAsync('notification');
+    await SecureStore.deleteItemAsync('minutesAgo');
+    await SecureStore.deleteItemAsync('sightings');
+    await SecureStore.deleteItemAsync('scheduled');
 };
