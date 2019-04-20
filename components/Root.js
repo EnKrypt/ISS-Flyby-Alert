@@ -1,10 +1,11 @@
 import React from 'react';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
-import { SecureStore, Notifications, BackgroundFetch, TaskManager } from 'expo';
+import { SecureStore, Notifications, BackgroundFetch } from 'expo';
 import { handleError } from '../handlers';
 import AlertSettings from './AlertSettings';
+import LocationPicker from './LocationPicker';
 import Colors from '../constants/Colors';
-import { getSightings } from '../task';
+import { getSightings, addNotifications } from '../task';
 
 export default class Root extends React.Component {
     constructor() {
@@ -14,7 +15,8 @@ export default class Root extends React.Component {
             location: undefined,
             notification: false,
             minutesAgo: 5,
-            sightings: []
+            sightings: [],
+            showLocationPicker: false
         };
     }
 
@@ -45,38 +47,61 @@ export default class Root extends React.Component {
                     }
                 );
             } else {
-                // TODO: Replace hard-coded location with Location Selector Screen
-                const initialLocationData = {
-                    country: 'India',
-                    region: 'None',
-                    city: 'Bengaluru'
-                };
-                await SecureStore.setItemAsync(
-                    'location',
-                    JSON.stringify(initialLocationData)
-                );
                 await SecureStore.setItemAsync(
                     'notification',
                     JSON.stringify(false)
                 );
                 await SecureStore.setItemAsync('minutesAgo', JSON.stringify(5));
-                this.setState(
-                    {
-                        location: initialLocationData
-                    },
-                    async () => {
-                        const sightings = await this.getSightings(location);
-                        this.setState({
-                            sightings: sightings,
-                            loaded: true
-                        });
-                    }
-                );
+                await this.selectLocation();
             }
         } catch (err) {
             handleError(err);
         }
     }
+
+    selectLocation = () => {
+        this.setState({
+            showLocationPicker: true,
+            loaded: false
+        });
+    };
+
+    setLocation = async locationData => {
+        this.setState(
+            {
+                showLocationPicker: false
+            },
+            async () => {
+                await SecureStore.setItemAsync(
+                    'location',
+                    JSON.stringify(locationData)
+                );
+                this.setState(
+                    {
+                        location: locationData
+                    },
+                    async () => {
+                        const sightings = await this.getSightings(locationData);
+                        this.setState(
+                            {
+                                sightings: sightings,
+                                loaded: true
+                            },
+                            async () => {
+                                if (this.state.notification) {
+                                    await this.removeNotifications();
+                                    await this.addNotifications(
+                                        this.state.sightings,
+                                        this.state.minutesAgo
+                                    );
+                                }
+                            }
+                        );
+                    }
+                );
+            }
+        );
+    };
 
     setNotification = value => {
         this.setState(
@@ -123,12 +148,35 @@ export default class Root extends React.Component {
         await SecureStore.deleteItemAsync('scheduled');
     };
 
+    toggleSightingExpand = sightingIndex => {
+        const copiedSightings = this.state.sightings.slice();
+        copiedSightings[sightingIndex].expanded = !copiedSightings[
+            sightingIndex
+        ].expanded;
+        this.setState({
+            sightings: copiedSightings
+        });
+    };
+
     getSightings = getSightings;
 
     addNotifications = addNotifications;
 
     render() {
-        return this.state.loaded ? (
+        return this.state.showLocationPicker ? (
+            <View style={styles.container}>
+                <LocationPicker
+                    selectMarker={async marker => {
+                        await this.setLocation({
+                            country: marker[4],
+                            region: marker[3],
+                            city: marker[5],
+                            title: marker[0]
+                        });
+                    }}
+                />
+            </View>
+        ) : this.state.loaded ? (
             <View style={styles.container}>
                 <AlertSettings
                     location={this.state.location}
@@ -136,6 +184,8 @@ export default class Root extends React.Component {
                     minutes={this.state.minutesAgo}
                     setNotification={this.setNotification}
                     setMinutes={this.setMinutes}
+                    selectLocation={this.selectLocation}
+                    toggleSightingExpand={this.toggleSightingExpand}
                     sightings={this.state.sightings}
                 />
             </View>
