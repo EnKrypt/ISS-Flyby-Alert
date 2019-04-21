@@ -110,11 +110,13 @@ export default class AlertSettings extends React.Component {
                         Your location is set to : {'\n'}
                         {this.props.location.title}
                     </Text>
-                    <Button
-                        title="Change"
-                        color={Colors.accent}
-                        onPress={this.props.selectLocation}
-                    />
+                    <View style={styles.changeButton}>
+                        <Button
+                            title="Change"
+                            color={Colors.accent}
+                            onPress={this.props.selectLocation}
+                        />
+                    </View>
                 </View>
                 <View style={styles.singleRowControl}>
                     <Text style={styles.text}>Alerts: </Text>
@@ -228,5 +230,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center'
+    },
+    changeButton: {
+        width: 100
     }
 });
