@@ -10,6 +10,14 @@ The time interval relative to the flyby, before which the alert is to be sent, i
 
 ---
 
+## Install
+
+#### Coming soon on Google Play
+
+You can also manually download the [latest release](https://github.com/EnKrypt/ISS-Flyby-Alert/releases/latest)
+
+---
+
 ## Usage
 
 -   Select your location
