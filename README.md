@@ -12,7 +12,10 @@ The time interval relative to the flyby, before which the alert is to be sent, i
 
 ## Install
 
-#### Coming soon on Google Play
+<a href="https://play.google.com/store/apps/details?id=io.arvind.iss_flyby_alert">
+  <img alt="Get it on Google Play"
+       src="https://developer.android.com/images/brand/en_generic_rgb_wo_60.png" />
+</a>
 
 You can also manually download the [latest release](https://github.com/EnKrypt/ISS-Flyby-Alert/releases/latest)
 
