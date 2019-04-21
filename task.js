@@ -85,7 +85,7 @@ export const addNotifications = async (sightings, minutes) => {
                 }, and disappear at ${sighting.departure}.
             `,
                 android: {
-                    icon: './assets/icon-small.png',
+                    icon: './assets/icon.png',
                     color: Colors.darkPrimary
                 }
             },
