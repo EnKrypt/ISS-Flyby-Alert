@@ -2,6 +2,7 @@ import { SecureStore, Notifications, BackgroundFetch } from 'expo';
 import parse from 'date-fns/parse';
 import format from 'date-fns/format';
 import subMinutes from 'date-fns/sub_minutes';
+import isPast from 'date-fns/is_past';
 import { handleError } from './handlers';
 import Colors from './constants/Colors';
 
@@ -70,30 +71,32 @@ export const getSightings = async location => {
 export const addNotifications = async (sightings, minutes) => {
     const ids = [];
     for (const sighting of sightings) {
-        const id = await Notifications.scheduleLocalNotificationAsync(
-            {
-                title: `ISS Sighting scheduled in another ${minutes} minutes`,
-                body: `\nSighting begins at ${format(
-                    sighting.when,
-                    'Do MMM, H:mm A'
-                )} and will remain visible for ${
-                    sighting.duration
-                } minutes.\nIt will appear at ${
-                    sighting.approach
-                }, reach a max altitude of ${
-                    sighting.maxElevation
-                }, and disappear at ${sighting.departure}.
+        if (!isPast(sighting.when)) {
+            const id = await Notifications.scheduleLocalNotificationAsync(
+                {
+                    title: `ISS Sighting scheduled in another ${minutes} minutes`,
+                    body: `\nSighting begins at ${format(
+                        sighting.when,
+                        'Do MMM, H:mm A'
+                    )} and will remain visible for ${
+                        sighting.duration
+                    } minutes.\nIt will appear at ${
+                        sighting.approach
+                    }, reach a max altitude of ${
+                        sighting.maxElevation
+                    }, and disappear at ${sighting.departure}.
             `,
-                android: {
-                    icon: './assets/icon.png',
-                    color: Colors.darkPrimary
+                    android: {
+                        icon: './assets/icon.png',
+                        color: Colors.darkPrimary
+                    }
+                },
+                {
+                    time: subMinutes(sighting.when, minutes)
                 }
-            },
-            {
-                time: subMinutes(sighting.when, minutes)
-            }
-        );
-        ids.push(id);
+            );
+            ids.push(id);
+        }
     }
     await SecureStore.setItemAsync('scheduled', JSON.stringify(ids));
 };
