@@ -18,7 +18,7 @@ The time interval relative to the flyby, before which the alert is to be sent, i
 -   Click on each sighting optionally to view more information
 -   Past sightings are shown in red, sightings today are show in green, and future sightings are shown in the default gray color
 
-![Usage Screenshot](https://i.imgur.com/pgH1Fiw.png)
+![Usage Screenshot](https://i.imgur.com/pgH1Fiw.png) ![Notification Screenshot](https://i.imgur.com/qo8UNFM.png)
 
 ---
 
