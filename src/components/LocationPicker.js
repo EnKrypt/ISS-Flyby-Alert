@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     },
     accenttext: {
         color: Colors.accent,
-        fontFamily: 'Signika',
+        fontFamily: 'MerriweatherSans-Regular',
         fontSize: 20
     },
     search: {
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     },
     text: {
         color: Colors.text,
-        fontFamily: 'Signika',
+        fontFamily: 'MerriweatherSans-Regular',
         fontSize: 18
     },
     input: {

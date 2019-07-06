@@ -170,12 +170,12 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     text: {
-        fontFamily: 'Signika',
+        fontFamily: 'MerriweatherSans-Regular',
         fontSize: 20,
         color: Colors.text
     },
     disclaimer: {
-        fontFamily: 'Signika',
+        fontFamily: 'MerriweatherSans-Regular',
         fontSize: 15,
         color: Colors.error
     },
@@ -186,24 +186,24 @@ const styles = StyleSheet.create({
         borderRadius: 5
     },
     heading: {
-        fontFamily: 'Signika',
+        fontFamily: 'MerriweatherSans-Regular',
         fontSize: 22,
         color: Colors.text,
         textAlign: 'center',
         width: '100%'
     },
     sighting: {
-        fontFamily: 'Signika',
+        fontFamily: 'MerriweatherSans-Regular',
         fontSize: 15,
         color: Colors.text
     },
     pastSighting: {
-        fontFamily: 'Signika',
+        fontFamily: 'MerriweatherSans-Regular',
         fontSize: 15,
         color: Colors.past
     },
     todaySighting: {
-        fontFamily: 'Signika',
+        fontFamily: 'MerriweatherSans-Regular',
         fontSize: 15,
         color: Colors.today
     },
@@ -216,12 +216,12 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     notificationText: {
-        fontFamily: 'Signika',
+        fontFamily: 'MerriweatherSans-Regular',
         fontSize: 13,
         color: Colors.accent
     },
     metaText: {
-        fontFamily: 'Signika',
+        fontFamily: 'MerriweatherSans-Regular',
         fontSize: 11,
         color: Colors.text
     },
