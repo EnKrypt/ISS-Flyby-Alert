@@ -1,10 +1,11 @@
-import { SecureStore, Notifications, BackgroundFetch } from 'expo';
-import parse from 'date-fns/parse';
+import AsyncStorage from '@react-native-community/async-storage';
 import format from 'date-fns/format';
-import subMinutes from 'date-fns/sub_minutes';
 import isPast from 'date-fns/is_past';
+import parse from 'date-fns/parse';
+import subMinutes from 'date-fns/sub_minutes';
+import BackgroundFetch from 'react-native-background-fetch';
+import Notifications from 'react-native-push-notification';
 import { handleError } from './handlers';
-import Colors from './constants/Colors';
 
 export const getSightings = async location => {
     const query = await fetch(
@@ -55,10 +56,7 @@ export const getSightings = async location => {
                     ].join(' ')
                 };
             });
-            await SecureStore.setItemAsync(
-                'sightings',
-                JSON.stringify(sightings)
-            );
+            await AsyncStorage.setItem('sightings', JSON.stringify(sightings));
             return sightings;
         } else {
             return [];
@@ -70,71 +68,67 @@ export const getSightings = async location => {
 
 export const addNotifications = async (sightings, minutes) => {
     const ids = [];
+    let id = 1000;
     for (const sighting of sightings) {
         if (!isPast(sighting.when)) {
-            const id = await Notifications.scheduleLocalNotificationAsync(
-                {
-                    title: `ISS Sighting scheduled in another ${minutes} minutes`,
-                    body: `\nSighting begins at ${format(
-                        sighting.when,
-                        'Do MMM, H:mm A'
-                    )} and will remain visible for ${
-                        sighting.duration
-                    } minutes.\nIt will appear at ${
-                        sighting.approach
-                    }, reach a max altitude of ${
-                        sighting.maxElevation
-                    }, and disappear at ${sighting.departure}.
-            `,
-                    android: {
-                        icon: './assets/icon.png',
-                        color: Colors.darkPrimary
-                    }
-                },
-                {
-                    time: subMinutes(sighting.when, minutes)
-                }
-            );
+            // This module has poor documentation on fetching IDs,
+            // so we're going to generate our own by auto incrementing
+            id = id + 1;
+            Notifications.localNotificationSchedule({
+                id: '' + id,
+                title: `ISS Sighting scheduled in another ${minutes} minutes`,
+                message: `\nSighting begins at ${format(
+                    sighting.when,
+                    'Do MMM, H:mm A'
+                )} and will remain visible for ${
+                    sighting.duration
+                } minutes.\nIt will appear at ${
+                    sighting.approach
+                }, reach a max altitude of ${
+                    sighting.maxElevation
+                }, and disappear at ${sighting.departure}.
+                `,
+                subText: 'Upcoming Sighting',
+                date: subMinutes(sighting.when, minutes)
+            });
             ids.push(id);
         }
     }
-    await SecureStore.setItemAsync('scheduled', JSON.stringify(ids));
+    await AsyncStorage.setItem('scheduled', JSON.stringify(ids));
 };
 
 export const task = async () => {
     try {
-        const location = JSON.parse(await SecureStore.getItemAsync('location'));
+        const location = JSON.parse(await AsyncStorage.getItem('location'));
         const notification = JSON.parse(
-            await SecureStore.getItemAsync('notification')
+            await AsyncStorage.getItem('notification')
         );
-        const minutesAgo = JSON.parse(
-            await SecureStore.getItemAsync('minutesAgo')
-        );
+        const minutesAgo = JSON.parse(await AsyncStorage.getItem('minutesAgo'));
         if (notification && location && minutesAgo) {
             let oldSightings = [];
             try {
                 oldSightings = JSON.parse(
-                    await SecureStore.getItemAsync('sightings')
+                    await AsyncStorage.getItem('sightings')
                 );
             } catch (err) {}
             const sightings = getSightings(location);
             if (JSON.stringify(sightings) !== JSON.stringify(oldSightings)) {
                 await addNotifications(sightings, minutesAgo);
-                return BackgroundFetch.Result.NewData;
+                BackgroundFetch.finish(BackgroundFetch.FETCH_RESULT_NEW_DATA);
             } else {
-                return BackgroundFetch.Result.NoData;
+                BackgroundFetch.finish(BackgroundFetch.FETCH_RESULT_NO_DATA);
             }
         }
     } catch (err) {
         handleError(err);
-        return BackgroundFetch.Result.Failed;
+        BackgroundFetch.finish(BackgroundFetch.FETCH_RESULT_FAILED);
     }
 };
 
 export const purgeStorage = async () => {
-    await SecureStore.deleteItemAsync('location');
-    await SecureStore.deleteItemAsync('notification');
-    await SecureStore.deleteItemAsync('minutesAgo');
-    await SecureStore.deleteItemAsync('sightings');
-    await SecureStore.deleteItemAsync('scheduled');
+    await AsyncStorage.removeItem('location');
+    await AsyncStorage.removeItem('notification');
+    await AsyncStorage.removeItem('minutesAgo');
+    await AsyncStorage.removeItem('sightings');
+    await AsyncStorage.removeItem('scheduled');
 };

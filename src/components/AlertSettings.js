@@ -1,21 +1,21 @@
-import React from 'react';
-import {
-    StyleSheet,
-    Text,
-    View,
-    Switch,
-    Picker,
-    ScrollView,
-    Button,
-    TouchableOpacity
-} from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
-import Colors from '../constants/Colors';
-import format from 'date-fns/format';
 import diwtn from 'date-fns/distance_in_words_to_now';
+import format from 'date-fns/format';
 import isPast from 'date-fns/is_past';
 import isToday from 'date-fns/is_today';
 import subMinutes from 'date-fns/sub_minutes';
+import React from 'react';
+import {
+    Button,
+    Picker,
+    ScrollView,
+    StyleSheet,
+    Switch,
+    Text,
+    TouchableOpacity,
+    View
+} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import Colors from '../constants/Colors';
 
 export default class AlertSettings extends React.Component {
     render() {
@@ -51,13 +51,13 @@ export default class AlertSettings extends React.Component {
                                     )}`}{' '}
                                 </Text>
                                 {sighting.expanded ? (
-                                    <FontAwesome
+                                    <Icon
                                         name="angle-up"
                                         size={16}
                                         color={Colors.text}
                                     />
                                 ) : (
-                                    <FontAwesome
+                                    <Icon
                                         name="angle-down"
                                         size={16}
                                         color={Colors.text}

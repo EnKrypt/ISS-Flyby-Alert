@@ -1,11 +1,13 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import React from 'react';
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
-import { SecureStore, Notifications, BackgroundFetch } from 'expo';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import BackgroundFetch from 'react-native-background-fetch';
+import Notifications from 'react-native-push-notification';
+import Colors from '../constants/Colors';
 import { handleError } from '../handlers';
+import { addNotifications, getSightings } from '../task';
 import AlertSettings from './AlertSettings';
 import LocationPicker from './LocationPicker';
-import Colors from '../constants/Colors';
-import { getSightings, addNotifications } from '../task';
 
 export default class Root extends React.Component {
     constructor() {
@@ -22,14 +24,12 @@ export default class Root extends React.Component {
 
     async componentDidMount() {
         try {
-            const location = JSON.parse(
-                await SecureStore.getItemAsync('location')
-            );
+            const location = JSON.parse(await AsyncStorage.getItem('location'));
             const notification = JSON.parse(
-                await SecureStore.getItemAsync('notification')
+                await AsyncStorage.getItem('notification')
             );
             const minutesAgo = JSON.parse(
-                await SecureStore.getItemAsync('minutesAgo')
+                await AsyncStorage.getItem('minutesAgo')
             );
             if (location) {
                 this.setState(
@@ -47,11 +47,11 @@ export default class Root extends React.Component {
                     }
                 );
             } else {
-                await SecureStore.setItemAsync(
+                await AsyncStorage.setItem(
                     'notification',
                     JSON.stringify(false)
                 );
-                await SecureStore.setItemAsync('minutesAgo', JSON.stringify(5));
+                await AsyncStorage.setItem('minutesAgo', JSON.stringify(5));
                 await this.selectLocation();
             }
         } catch (err) {
@@ -72,7 +72,7 @@ export default class Root extends React.Component {
                 showLocationPicker: false
             },
             async () => {
-                await SecureStore.setItemAsync(
+                await AsyncStorage.setItem(
                     'location',
                     JSON.stringify(locationData)
                 );
@@ -109,7 +109,7 @@ export default class Root extends React.Component {
                 notification: value
             },
             async () => {
-                await SecureStore.setItemAsync(
+                await AsyncStorage.setItem(
                     'notification',
                     JSON.stringify(value)
                 );
@@ -118,10 +118,10 @@ export default class Root extends React.Component {
                         this.state.sightings,
                         this.state.minutesAgo
                     );
-                    await BackgroundFetch.registerTaskAsync('sync');
+                    BackgroundFetch.start();
                 } else {
                     await this.removeNotifications();
-                    await BackgroundFetch.unregisterTaskAsync('sync');
+                    BackgroundFetch.stop();
                 }
             }
         );
@@ -133,7 +133,7 @@ export default class Root extends React.Component {
                 minutesAgo: minutes
             },
             async () => {
-                await SecureStore.setItemAsync(
+                await AsyncStorage.setItem(
                     'minutesAgo',
                     JSON.stringify(minutes)
                 );
@@ -144,8 +144,8 @@ export default class Root extends React.Component {
     };
 
     removeNotifications = async () => {
-        await Notifications.cancelAllScheduledNotificationsAsync();
-        await SecureStore.deleteItemAsync('scheduled');
+        await AsyncStorage.removeItem('scheduled');
+        Notifications.cancelAllLocalNotifications();
     };
 
     toggleSightingExpand = sightingIndex => {

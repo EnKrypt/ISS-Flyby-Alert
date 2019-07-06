@@ -1,37 +1,4 @@
 {
-    "expo": {
-        "name": "ISS Flyby Alert",
-        "slug": "iss-flyby-alert",
-        "description": "A React Native Application to receive alerts for International Space Station flybys at your location",
-        "privacy": "public",
-        "sdkVersion": "32.0.0",
-        "platforms": ["ios", "android"],
-        "version": "0.1.1",
-        "orientation": "portrait",
-        "icon": "./assets/icon.png",
-        "notification": {
-            "icon": "./assets/icon-notification.png",
-            "color": "#152A3F"
-        },
-        "splash": {
-            "image": "./assets/splash.png",
-            "resizeMode": "contain",
-            "backgroundColor": "#152A3F"
-        },
-        "updates": {
-            "fallbackToCacheTimeout": 0
-        },
-        "assetBundlePatterns": ["**/*"],
-        "ios": {
-            "bundleIdentifier": "io.arvind.iss-flyby-alert",
-            "supportsTablet": true,
-            "infoPlist": {
-                "UIBackgroundModes": ["fetch"]
-            }
-        },
-        "android": {
-            "package": "io.arvind.iss_flyby_alert"
-        },
-        "githubUrl": "https://github.com/EnKrypt/ISS-Flyby-Alert"
-    }
+    "name": "ISSFlybyAlert",
+    "displayName": "ISS Flyby Alert"
 }

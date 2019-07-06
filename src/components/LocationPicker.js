@@ -1,15 +1,15 @@
 import React from 'react';
 import {
-    TouchableOpacity,
     FlatList,
-    Text,
     StyleSheet,
-    View,
-    TextInput
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from 'react-native';
-import markers from '../markers';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import Colors from '../constants/Colors';
-import { FontAwesome } from '@expo/vector-icons';
+import markers from '../markers';
 
 export default class LocationPicker extends React.Component {
     constructor() {
@@ -45,7 +45,7 @@ export default class LocationPicker extends React.Component {
                         placeholder="Filter"
                         onChangeText={this.debouncedFilter}
                     />
-                    <FontAwesome name="search" size={20} color={Colors.text} />
+                    <Icon name="search" size={20} color={Colors.text} />
                 </View>
                 <FlatList
                     style={styles.list}
@@ -67,7 +67,7 @@ export default class LocationPicker extends React.Component {
                             }}
                         >
                             <View style={styles.view}>
-                                <FontAwesome
+                                <Icon
                                     name="map-marker"
                                     size={20}
                                     color={Colors.text}

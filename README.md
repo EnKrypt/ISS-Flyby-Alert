@@ -33,4 +33,4 @@ You can also manually download the [latest release](https://github.com/EnKrypt/I
 
 ---
 
-##### Built using [Expo](https://expo.io/)
+##### Main icon and logo was built on a concept by [Agata](https://goodstuffnononsense.com/about/)
