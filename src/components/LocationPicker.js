@@ -43,6 +43,7 @@ export default class LocationPicker extends React.Component {
                     <TextInput
                         style={styles.input}
                         placeholder="Filter"
+                        placeholderTextColor={Colors.placeholder}
                         onChangeText={this.debouncedFilter}
                     />
                     <Icon name="search" size={20} color={Colors.text} />
@@ -99,7 +100,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: Colors.darkPrimary,
+        marginTop: 10,
         marginBottom: 20,
+        marginHorizontal: 10,
         height: 50,
         paddingHorizontal: 20
     },

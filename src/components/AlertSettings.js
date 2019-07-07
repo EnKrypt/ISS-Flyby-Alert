@@ -104,7 +104,7 @@ export default class AlertSettings extends React.Component {
             </View>
         );
         return (
-            <ScrollView style={styles.container}>
+            <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.singleRowControl}>
                     <Text style={styles.text}>
                         Your location is set to : {'\n'}
@@ -160,7 +160,10 @@ export default class AlertSettings extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    container: {},
+    container: {
+        paddingHorizontal: 10,
+        paddingVertical: 20
+    },
     singleRowControl: {
         flex: 1,
         padding: 20,

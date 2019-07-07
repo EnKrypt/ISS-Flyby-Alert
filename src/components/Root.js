@@ -200,8 +200,8 @@ export default class Root extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: 20,
-        paddingVertical: 40,
+        paddingHorizontal: 0,
+        paddingVertical: 0,
         backgroundColor: Colors.primary,
         justifyContent: 'center'
     }
