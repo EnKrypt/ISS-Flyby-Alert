@@ -1,4 +1,4 @@
-package com.iss_flyby_alert;
+package io.arvind.iss_flyby_alert;
 
 import android.app.Application;
 

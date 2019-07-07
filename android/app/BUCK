@@ -35,12 +35,12 @@ android_library(
 
 android_build_config(
     name = "build_config",
-    package = "com.iss_flyby_alert",
+    package = "io.arvind.iss_flyby_alert",
 )
 
 android_resource(
     name = "res",
-    package = "com.iss_flyby_alert",
+    package = "io.arvind.iss_flyby_alert",
     res = "src/main/res",
 )
 
