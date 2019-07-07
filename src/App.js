@@ -21,7 +21,7 @@ export default class App extends React.Component {
             }
         );
         // Caching or preloading operations go here..
-        await new Promise(resolve => setTimeout(resolve, 250));
+        await new Promise(resolve => setTimeout(resolve, 750)); // Reasonable amount of delay to look at the splash screen
         SplashScreen.hide();
     }
 
