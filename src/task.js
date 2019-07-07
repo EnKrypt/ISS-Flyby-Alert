@@ -1,10 +1,12 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import differenceInMinutes from 'date-fns/difference_in_minutes';
 import format from 'date-fns/format';
 import isPast from 'date-fns/is_past';
 import parse from 'date-fns/parse';
 import subMinutes from 'date-fns/sub_minutes';
 import BackgroundFetch from 'react-native-background-fetch';
 import Notifications from 'react-native-push-notification';
+import Colors from './constants/Colors';
 import { handleError } from './handlers';
 
 export const getSightings = async location => {
@@ -74,10 +76,15 @@ export const addNotifications = async (sightings, minutes) => {
             // This module has poor documentation on fetching IDs,
             // so we're going to generate our own by auto incrementing
             id = id + 1;
+            let timeToSighting = minutes;
+            if (differenceInMinutes(sighting.when, new Date()) < minutes) {
+                timeToSighting = differenceInMinutes(sighting.when, new Date());
+            }
             Notifications.localNotificationSchedule({
                 id: '' + id,
-                title: `ISS Sighting scheduled in another ${minutes} minutes`,
-                message: `\nSighting begins at ${format(
+                title: `Scheduled ISS sighting in ${timeToSighting} minutes`,
+                message: 'Expand to see details',
+                bigText: `\nSighting begins at ${format(
                     sighting.when,
                     'Do MMM, H:mm A'
                 )} and will remain visible for ${
@@ -89,6 +96,9 @@ export const addNotifications = async (sightings, minutes) => {
                 }, and disappear at ${sighting.departure}.
                 `,
                 subText: 'Upcoming Sighting',
+                largeIcon: 'ic_launcher',
+                smallIcon: 'ic_notification',
+                color: Colors.accent,
                 date: subMinutes(sighting.when, minutes)
             });
             ids.push(id);

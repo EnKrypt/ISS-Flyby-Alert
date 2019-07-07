@@ -5,7 +5,8 @@ const Colors = {
     text: '#e0e0e0',
     error: '#ff6060',
     past: '#e09070',
-    today: '#80e080'
+    today: '#80e080',
+    placeholder: '#909090'
 };
 
 export default Colors;
