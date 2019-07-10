@@ -50,7 +50,7 @@ export default class AlertSettings extends React.Component {
                                     <Text style={style}>
                                         {`${format(
                                             sighting.when,
-                                            'Do MMM, YYYY [at] H:mm A'
+                                            'Do MMM, YYYY [at] h:mm A'
                                         )}`}{' '}
                                     </Text>
                                     {sighting.expanded ? (
@@ -88,7 +88,7 @@ export default class AlertSettings extends React.Component {
                                                     sighting.when,
                                                     this.props.minutes
                                                 ),
-                                                'Do MMM [at] H:mm A'
+                                                'Do MMM [at] h:mm A'
                                             )}`}
                                         </Text>
                                     )}

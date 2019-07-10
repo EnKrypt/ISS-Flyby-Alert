@@ -89,7 +89,7 @@ export const addNotifications = async (sightings, minutes) => {
                 message: 'Expand to see details',
                 bigText: `\nSighting begins at ${format(
                     sighting.when,
-                    'Do MMM, H:mm A'
+                    'Do MMM, h:mm A'
                 )} and will remain visible for ${
                     sighting.duration
                 }.\nIt will appear at ${
