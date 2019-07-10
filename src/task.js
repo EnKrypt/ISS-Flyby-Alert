@@ -32,31 +32,34 @@ export const getSightings = async location => {
                     .trim()
             );
             const sightings = mappedResponse.map(res => {
-                const exploded = res.split(' ');
-                const date = [
-                    exploded[1],
-                    exploded[2],
-                    exploded[3],
-                    exploded[4]
-                ]
-                    .join(' ')
-                    .replace(/\,/gm, '');
-                const time = [exploded[6], exploded[7]].join(' ');
-                return {
-                    when: parse(`${date}, ${time}`),
-                    duration: +exploded[9],
-                    maxElevation: exploded[13].replace('&#176;', '°'),
-                    approach: [
-                        exploded[15].replace('&#176;', '°'),
-                        exploded[16],
-                        exploded[17]
-                    ].join(' '),
-                    departure: [
-                        exploded[19].replace('&#176;', '°'),
-                        exploded[20],
-                        exploded[21]
-                    ].join(' ')
-                };
+                try {
+                    const date = /Date\:(.*?)\&lt/gm
+                        .exec(res)[1]
+                        .trim()
+                        .replace(/\,/gm, '');
+                    const time = /Time\:(.*?)\&lt/gm.exec(res)[1].trim();
+                    return {
+                        when: parse(`${date}, ${time}`),
+                        duration: /Duration\:(.*?)\&lt/gm.exec(res)[1].trim(),
+                        maxElevation: /Elevation\:(.*?)\&lt/gm
+                            .exec(res)[1]
+                            .trim()
+                            .replace('&#176;', '°'),
+                        approach: /Approach\:(.*?)\&lt/gm
+                            .exec(res)[1]
+                            .trim()
+                            .replace('&#176;', '°'),
+                        departure: /Departure\:(.*?)\&lt/gm
+                            .exec(res)[1]
+                            .trim()
+                            .replace('&#176;', '°')
+                    };
+                } catch (e) {
+                    console.warn(
+                        'Parsing error. Looks like NASA API sent a weird response.'
+                    );
+                    return {};
+                }
             });
             await AsyncStorage.setItem('sightings', JSON.stringify(sightings));
             return sightings;
@@ -72,7 +75,7 @@ export const addNotifications = async (sightings, minutes) => {
     const ids = [];
     let id = 1000;
     for (const sighting of sightings) {
-        if (!isPast(sighting.when)) {
+        if (sighting.when && !isPast(sighting.when)) {
             // This module has poor documentation on fetching IDs,
             // so we're going to generate our own by auto incrementing
             id = id + 1;
@@ -89,7 +92,7 @@ export const addNotifications = async (sightings, minutes) => {
                     'Do MMM, H:mm A'
                 )} and will remain visible for ${
                     sighting.duration
-                } minutes.\nIt will appear at ${
+                }.\nIt will appear at ${
                     sighting.approach
                 }, reach a max altitude of ${
                     sighting.maxElevation

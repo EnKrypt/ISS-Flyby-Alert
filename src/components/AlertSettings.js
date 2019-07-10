@@ -20,80 +20,83 @@ import Colors from '../constants/Colors';
 export default class AlertSettings extends React.Component {
     render() {
         const sightings = this.props.sightings.length ? (
-            this.props.sightings.map((sighting, index) => {
-                let style = styles.sighting;
-                let relative = '';
-                if (isToday(sighting.when)) {
-                    style = styles.todaySighting;
-                }
-                if (isPast(sighting.when)) {
-                    style = styles.pastSighting;
-                    relative = `${diwtn(sighting.when)} ago`;
-                    relative =
-                        relative.charAt(0).toUpperCase() + relative.slice(1);
-                } else {
-                    relative = `In ${diwtn(sighting.when)}`;
-                }
-                return (
-                    <TouchableOpacity
-                        style={styles.sightingContainer}
-                        key={JSON.stringify(sighting)}
-                        onPress={() => {
-                            this.props.toggleSightingExpand(index);
-                        }}
-                    >
-                        <View>
-                            <View style={styles.inlineView}>
-                                <Text style={style}>
-                                    {`${format(
-                                        sighting.when,
-                                        'Do MMM, YYYY [at] H:mm A'
-                                    )}`}{' '}
-                                </Text>
-                                {sighting.expanded ? (
-                                    <Icon
-                                        name="angle-up"
-                                        size={16}
-                                        color={Colors.text}
-                                    />
-                                ) : (
-                                    <Icon
-                                        name="angle-down"
-                                        size={16}
-                                        color={Colors.text}
-                                    />
-                                )}
-                            </View>
-                            {sighting.expanded && (
-                                <Text style={styles.metaText}>
-                                    Visible for {sighting.duration} minutes
-                                    {'\n'}
-                                    Appears at {sighting.approach}
-                                    {'\n'}
-                                    Reaches max altitude of{' '}
-                                    {sighting.maxElevation}
-                                    {'\n'}
-                                    Disappears at {sighting.departure}
-                                </Text>
-                            )}
-                            {this.props.notification &&
-                                !isPast(sighting.when) && (
-                                    <Text style={styles.notificationText}>
-                                        Alert set for{' '}
+            this.props.sightings
+                .filter(sighting => sighting.when)
+                .map((sighting, index) => {
+                    let style = styles.sighting;
+                    let relative = '';
+                    if (isToday(sighting.when)) {
+                        style = styles.todaySighting;
+                    }
+                    if (isPast(sighting.when)) {
+                        style = styles.pastSighting;
+                        relative = `${diwtn(sighting.when)} ago`;
+                        relative =
+                            relative.charAt(0).toUpperCase() +
+                            relative.slice(1);
+                    } else {
+                        relative = `In ${diwtn(sighting.when)}`;
+                    }
+                    return (
+                        <TouchableOpacity
+                            style={styles.sightingContainer}
+                            key={JSON.stringify(sighting)}
+                            onPress={() => {
+                                this.props.toggleSightingExpand(index);
+                            }}
+                        >
+                            <View>
+                                <View style={styles.inlineView}>
+                                    <Text style={style}>
                                         {`${format(
-                                            subMinutes(
-                                                sighting.when,
-                                                this.props.minutes
-                                            ),
-                                            'Do MMM [at] H:mm A'
-                                        )}`}
+                                            sighting.when,
+                                            'Do MMM, YYYY [at] H:mm A'
+                                        )}`}{' '}
+                                    </Text>
+                                    {sighting.expanded ? (
+                                        <Icon
+                                            name="angle-up"
+                                            size={16}
+                                            color={Colors.text}
+                                        />
+                                    ) : (
+                                        <Icon
+                                            name="angle-down"
+                                            size={16}
+                                            color={Colors.text}
+                                        />
+                                    )}
+                                </View>
+                                {sighting.expanded && (
+                                    <Text style={styles.metaText}>
+                                        Visible for {sighting.duration}
+                                        {'\n'}
+                                        Appears at {sighting.approach}
+                                        {'\n'}
+                                        Reaches max altitude of{' '}
+                                        {sighting.maxElevation}
+                                        {'\n'}
+                                        Disappears at {sighting.departure}
                                     </Text>
                                 )}
-                        </View>
-                        <Text style={style}>{relative}</Text>
-                    </TouchableOpacity>
-                );
-            })
+                                {this.props.notification &&
+                                    !isPast(sighting.when) && (
+                                        <Text style={styles.notificationText}>
+                                            Alert set for{' '}
+                                            {`${format(
+                                                subMinutes(
+                                                    sighting.when,
+                                                    this.props.minutes
+                                                ),
+                                                'Do MMM [at] H:mm A'
+                                            )}`}
+                                        </Text>
+                                    )}
+                            </View>
+                            <Text style={style}>{relative}</Text>
+                        </TouchableOpacity>
+                    );
+                })
         ) : (
             <View style={styles.singleRowControl}>
                 <Text style={styles.disclaimer}>
