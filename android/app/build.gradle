@@ -105,8 +105,8 @@ android {
         applicationId "io.arvind.iss_flyby_alert"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "0.2.0"
+        versionCode 3
+        versionName "0.2.1"
     }
     signingConfigs {
         release {
