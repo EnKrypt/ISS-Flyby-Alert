@@ -1,3 +1,4 @@
+import Button from 'apsl-react-native-button';
 import diwtn from 'date-fns/distance_in_words_to_now';
 import format from 'date-fns/format';
 import isPast from 'date-fns/is_past';
@@ -5,7 +6,6 @@ import isToday from 'date-fns/is_today';
 import subMinutes from 'date-fns/sub_minutes';
 import React from 'react';
 import {
-    Button,
     Picker,
     ScrollView,
     StyleSheet,
@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Colors from '../constants/Colors';
+import { getFontScale, getUIScale } from '../displayScale';
 
 export default class AlertSettings extends React.Component {
     render() {
@@ -111,15 +112,17 @@ export default class AlertSettings extends React.Component {
                 <View style={styles.singleRowControl}>
                     <Text style={styles.text}>
                         Your location is set to : {'\n'}
-                        {this.props.location.title}
+                        {this.props.location.title.length > 25
+                            ? `${this.props.location.title.substring(0, 22)}...`
+                            : this.props.location.title}
                     </Text>
-                    <View style={styles.changeButton}>
-                        <Button
-                            title="Change"
-                            color={Colors.accent}
-                            onPress={this.props.selectLocation}
-                        />
-                    </View>
+                    <Button
+                        style={styles.button}
+                        textStyle={styles.buttonText}
+                        onPress={this.props.selectLocation}
+                    >
+                        CHANGE
+                    </Button>
                 </View>
                 <View style={styles.singleRowControl}>
                     <Text style={styles.text}>Alerts: </Text>
@@ -164,12 +167,12 @@ export default class AlertSettings extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        paddingHorizontal: 10,
-        paddingVertical: 20
+        paddingHorizontal: getUIScale(10),
+        paddingVertical: getUIScale(20)
     },
     singleRowControl: {
         flex: 1,
-        padding: 20,
+        padding: getUIScale(20),
         width: '100%',
         flexDirection: 'row',
         alignItems: 'center',
@@ -177,45 +180,55 @@ const styles = StyleSheet.create({
     },
     text: {
         fontFamily: 'MerriweatherSans-Regular',
-        fontSize: 20,
+        fontSize: getFontScale(20),
+        color: Colors.text
+    },
+    button: {
+        backgroundColor: Colors.accent,
+        width: getUIScale(110),
+        marginLeft: getUIScale(10)
+    },
+    buttonText: {
+        fontFamily: 'MerriweatherSans-Regular',
+        fontSize: getFontScale(16),
         color: Colors.text
     },
     disclaimer: {
         fontFamily: 'MerriweatherSans-Regular',
-        fontSize: 15,
+        fontSize: getFontScale(15),
         color: Colors.error
     },
     picker: {
         flex: 0.9,
         color: Colors.accent,
         backgroundColor: Colors.darkPrimary,
-        borderRadius: 5
+        borderRadius: getUIScale(5)
     },
     heading: {
         fontFamily: 'MerriweatherSans-Regular',
-        fontSize: 22,
+        fontSize: getFontScale(22),
         color: Colors.text,
         textAlign: 'center',
         width: '100%'
     },
     sighting: {
         fontFamily: 'MerriweatherSans-Regular',
-        fontSize: 15,
+        fontSize: getFontScale(15),
         color: Colors.text
     },
     pastSighting: {
         fontFamily: 'MerriweatherSans-Regular',
-        fontSize: 15,
+        fontSize: getFontScale(15),
         color: Colors.past
     },
     todaySighting: {
         fontFamily: 'MerriweatherSans-Regular',
-        fontSize: 15,
+        fontSize: getFontScale(15),
         color: Colors.today
     },
     sightingContainer: {
         flex: 1,
-        padding: 5,
+        padding: getUIScale(5),
         width: '100%',
         flexDirection: 'row',
         alignItems: 'center',
@@ -223,12 +236,12 @@ const styles = StyleSheet.create({
     },
     notificationText: {
         fontFamily: 'MerriweatherSans-Regular',
-        fontSize: 13,
+        fontSize: getFontScale(13),
         color: Colors.accent
     },
     metaText: {
         fontFamily: 'MerriweatherSans-Regular',
-        fontSize: 11,
+        fontSize: getFontScale(11),
         color: Colors.text
     },
     inlineView: {
@@ -236,8 +249,5 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center'
-    },
-    changeButton: {
-        width: 100
     }
 });

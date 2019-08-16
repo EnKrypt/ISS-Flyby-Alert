@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Colors from '../constants/Colors';
+import { getUIScale, getFontScale } from '../displayScale';
 import markers from '../markers';
 
 export default class LocationPicker extends React.Component {
@@ -93,24 +94,24 @@ const styles = StyleSheet.create({
     accenttext: {
         color: Colors.accent,
         fontFamily: 'MerriweatherSans-Regular',
-        fontSize: 20
+        fontSize: getFontScale(20)
     },
     search: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: Colors.darkPrimary,
-        marginTop: 10,
-        marginBottom: 20,
-        marginHorizontal: 10,
-        height: 50,
-        paddingHorizontal: 20
+        marginTop: getUIScale(10),
+        marginBottom: getUIScale(20),
+        marginHorizontal: getUIScale(10),
+        height: getUIScale(50),
+        paddingHorizontal: getUIScale(20)
     },
     row: {
-        height: 50,
+        height: getUIScale(50),
         width: '100%',
         backgroundColor: Colors.darkPrimary,
-        paddingHorizontal: 20,
+        paddingHorizontal: getUIScale(20),
         borderBottomWidth: 1,
         borderColor: Colors.primary
     },
@@ -123,11 +124,11 @@ const styles = StyleSheet.create({
     text: {
         color: Colors.text,
         fontFamily: 'MerriweatherSans-Regular',
-        fontSize: 18
+        fontSize: getFontScale(18)
     },
     input: {
         flex: 1,
         color: Colors.text,
-        fontSize: 18
+        fontSize: getFontScale(15)
     }
 });
