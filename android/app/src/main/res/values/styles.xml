@@ -4,5 +4,6 @@
         <!-- Customize your theme here. -->
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:colorPrimaryDark">@color/primary_dark</item>
+        <item name="android:navigationBarColor">@color/primary_dark</item>
     </style>
 </resources>
