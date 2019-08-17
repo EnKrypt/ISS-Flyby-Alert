@@ -110,6 +110,11 @@ export const addNotifications = async (sightings, minutes) => {
     await AsyncStorage.setItem('scheduled', JSON.stringify(ids));
 };
 
+export const removeNotifications = async () => {
+    await AsyncStorage.removeItem('scheduled');
+    Notifications.cancelAllLocalNotifications();
+};
+
 export const task = async () => {
     try {
         const location = JSON.parse(await AsyncStorage.getItem('location'));
@@ -124,13 +129,16 @@ export const task = async () => {
                     await AsyncStorage.getItem('sightings')
                 );
             } catch (err) {}
-            const sightings = getSightings(location);
+            const sightings = await getSightings(location);
             if (JSON.stringify(sightings) !== JSON.stringify(oldSightings)) {
+                await removeNotifications();
                 await addNotifications(sightings, minutesAgo);
                 BackgroundFetch.finish(BackgroundFetch.FETCH_RESULT_NEW_DATA);
             } else {
                 BackgroundFetch.finish(BackgroundFetch.FETCH_RESULT_NO_DATA);
             }
+        } else {
+            BackgroundFetch.finish(BackgroundFetch.FETCH_RESULT_NO_DATA);
         }
     } catch (err) {
         handleError(err);

@@ -2,10 +2,9 @@ import AsyncStorage from '@react-native-community/async-storage';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import BackgroundFetch from 'react-native-background-fetch';
-import Notifications from 'react-native-push-notification';
 import Colors from '../constants/Colors';
 import { handleError } from '../handlers';
-import { addNotifications, getSightings } from '../task';
+import { addNotifications, getSightings, removeNotifications } from '../task';
 import AlertSettings from './AlertSettings';
 import LocationPicker from './LocationPicker';
 
@@ -39,7 +38,21 @@ export default class Root extends React.Component {
                         minutesAgo: minutesAgo || 5
                     },
                     async () => {
+                        let oldSightings = [];
+                        try {
+                            oldSightings = JSON.parse(
+                                await AsyncStorage.getItem('sightings')
+                            );
+                        } catch (err) {}
                         const sightings = await this.getSightings(location);
+                        if (
+                            notification &&
+                            JSON.stringify(sightings) !==
+                                JSON.stringify(oldSightings)
+                        ) {
+                            await removeNotifications();
+                            await addNotifications(sightings, minutesAgo);
+                        }
                         this.setState({
                             sightings: sightings,
                             loaded: true
@@ -143,11 +156,6 @@ export default class Root extends React.Component {
         );
     };
 
-    removeNotifications = async () => {
-        await AsyncStorage.removeItem('scheduled');
-        Notifications.cancelAllLocalNotifications();
-    };
-
     toggleSightingExpand = sightingIndex => {
         const copiedSightings = this.state.sightings.slice();
         copiedSightings[sightingIndex].expanded = !copiedSightings[
@@ -161,6 +169,8 @@ export default class Root extends React.Component {
     getSightings = getSightings;
 
     addNotifications = addNotifications;
+
+    removeNotifications = removeNotifications;
 
     render() {
         return this.state.showLocationPicker ? (
