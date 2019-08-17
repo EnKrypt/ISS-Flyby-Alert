@@ -1,4 +1,4 @@
-import { PixelRatio } from 'react-native';
+import { PixelRatio, Dimensions } from 'react-native';
 
 /*
  * There's a reason why this scaling is needed. Instead of risking the
@@ -21,7 +21,15 @@ import { PixelRatio } from 'react-native';
  * in which case the font will have weird sizes on that device.
  */
 
-export const getUIScale = qty => (qty / PixelRatio.get()) * 2.5;
+const multiplier =
+    (Math.min(
+        Dimensions.get('screen').height * PixelRatio.get(),
+        Dimensions.get('screen').width * PixelRatio.get()
+    ) /
+        1080) *
+    2.5;
+
+export const getUIScale = qty => (qty / PixelRatio.get()) * multiplier;
 
 export const getFontScale = qty =>
-    (qty / PixelRatio.get() / PixelRatio.getFontScale()) * 2.5;
+    (qty / PixelRatio.get() / PixelRatio.getFontScale()) * multiplier;

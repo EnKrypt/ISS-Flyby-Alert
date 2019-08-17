@@ -186,7 +186,10 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: Colors.accent,
         width: getUIScale(110),
-        marginLeft: getUIScale(10)
+        marginLeft: getUIScale(10),
+        marginBottom: 0,
+        height: getUIScale(40),
+        marginTop: getUIScale(8)
     },
     buttonText: {
         fontFamily: 'MerriweatherSans-Regular',
